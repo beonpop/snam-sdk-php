@@ -1,0 +1,23 @@
+{
+    "name": "beonpop/snam-sdk-php",
+    "description": "",
+    "authors": [
+        {
+            "name": "Cleber Rodrigues",
+            "email": "cleber@cleberar.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "obsh/sse-client": "^0.1.3"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "SNAMClient\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}
