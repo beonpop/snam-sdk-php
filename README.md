@@ -24,9 +24,6 @@ Atualize o composer
 
 ## Exemplo de Uso
 
-> **Note:** This version of the Facebook SDK for PHP requires PHP 5.4 or greater.
-
-Simple GET example of a user's profile.
 
 ```php
 require_once __DIR__ . '/vendor/autoload.php';
