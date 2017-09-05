@@ -22,8 +22,8 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <const name="SNAM_AUTH_ID" value="" />
-        <const name="SNAM_APP_ID" value="" />
-        <const name="SNAM_APP_TOKEN" value="" />
+        <env name="SNAM_APP_ID" value="" />
+        <env name="SNAM_APP_TOKEN" value="" />
+        <env name="SNAM_APP" value="" />
     </php>
 </phpunit>
