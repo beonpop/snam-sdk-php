@@ -1,0 +1,19 @@
+{
+    "name": "beonpop/example",
+    "authors": [
+        {
+            "name": "Cleber Rodrigues",
+            "email": "cleber@cleberar.com"
+        }
+    ],
+    "require": {
+        "beonpop/snam-sdk-php" : "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/beonpop/snam-sdk-php",
+            "branch": "master"
+        }
+    ]
+}
