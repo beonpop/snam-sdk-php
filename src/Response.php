@@ -25,9 +25,11 @@ class Response
 
     private function parseHeaders()
     {
-        list($headers, $content) = explode("\r\n\r\n", $this->response, 2);
+        $payload = explode("\r\n\r\n", $this->response);
         $this->headers = [];
 
+        $content = array_pop($payload);
+        $headers = array_pop($payload);
         foreach (explode("\r\n", $headers) as $item) {
             if (preg_match('/([A-Za-z\-]+): (.*)/', $item, $header)) {
                 list($line, $key, $value) = $header;
