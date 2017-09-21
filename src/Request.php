@@ -22,25 +22,19 @@ class Request
         $this->header[] = $type . ": " . $content;
     }
 
-    public function run($method, $paramets = "")
+    public function run($method, $parameters = "")
     {
         $curl = curl_init();
-        if (is_array($paramets)) {
-            $requestBody = json_encode($paramets);
-        } else {
-            $requestBody = $paramets;
-        }
-
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $this->authBasic);
 
         switch (strtoupper($method)) {
             case 'GET':
-                return $this->_get($curl, $requestBody);
+                return $this->_get($curl, $parameters);
             case 'POST':
-                return $this->_post($curl, $requestBody);
+                return $this->_post($curl, $parameters);
             case 'PUT':
-                return $this->_put($curl, $requestBody);
+                return $this->_put($curl, $parameters);
             case 'DELETE':
                 return $this->_delete($curl);
             default:
@@ -83,26 +77,37 @@ class Request
         $this->authBasic = $user . ':' . $pwd;
     }
 
-    private function _get($curl, $requestBody)
+    private function _get($curl, $parameters = "")
     {
-        $this->url .= "?" . $requestBody;
+        if (is_array($parameters)) {
+            $parameters = http_build_query($parameters, null, '&');
+        }
+        $this->url .= "?" . $parameters;
         return $this->doRequest($curl);
     }
 
-    private function _post($curl, $requestBody)
+    private function _post($curl, $parameters = "")
     {
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $requestBody);
+        if (is_array($parameters)) {
+            $parameters = json_encode($parameters);
+        }
+
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
         curl_setopt($curl, CURLOPT_POST, 1);
         return $this->doRequest($curl);
     }
 
-    private function _put($curl, $requestBody)
+    private function _put($curl, $parameters = "")
     {
+        if (is_array($parameters)) {
+            $parameters = json_encode($parameters);
+        }
+
         $fh = fopen('php://memory', 'rw');
-        fwrite($fh, $requestBody);
+        fwrite($fh, $parameters);
         rewind($fh);
         curl_setopt($curl, CURLOPT_INFILE, $fh);
-        curl_setopt($curl, CURLOPT_INFILESIZE, strlen($requestBody));
+        curl_setopt($curl, CURLOPT_INFILESIZE, strlen($parameters));
         curl_setopt($curl, CURLOPT_PUT, true);
         return $this->doRequest($curl);
     }

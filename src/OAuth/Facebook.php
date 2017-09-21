@@ -75,6 +75,19 @@ class Facebook extends AbstractProvider
         return $this->lastToken = parent::getAccessToken($grant, $params);
     }
 
+    public function getToken()
+    {
+        if (!empty($this->lastToken)) {
+            return (string)$this->lastToken;
+        }
+
+        if (!empty($this->connection->owner) && isset($this->connection->owner["token"])) {
+            return (string)$this->connection->owner["token"];
+        }
+
+        return (string)self::getAccessToken();
+    }
+
     public function getLongLivedAccessToken($accessToken)
     {
         $params = [
@@ -118,7 +131,7 @@ class Facebook extends AbstractProvider
 
     public function getPermissions()
     {
-        $token = (string)$this->lastToken;
+        $token = $this->getToken();
         $url = $this->getBaseGraphUrl().$this->graphApiVersion.'/me/permissions?access_token='.$token;
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
         $response = $this->getParsedResponse($request);
@@ -142,14 +155,23 @@ class Facebook extends AbstractProvider
             'id', 'name', 'emails', 'picture.type(large){url}', 'link', 'username', 'access_token'
         ];
 
-        $token = (string)$this->lastToken;
+        $token = $this->getToken();
         $url = $this->getBaseGraphUrl().$this->graphApiVersion.'/me/accounts?fields='.implode(',', $fields).'&access_token='.$token;
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
         $response = $this->getParsedResponse($request);
 
         $accountList = [];
-        foreach ($response["data"] as $accounts) {
-            $accountList[$accounts["id"]] = $accounts;
+        foreach ($response["data"] as $account) {
+            $accountList[$account["id"]] = [
+                "connection" => "facebook",
+                "email"      => (isset($account["emails"]) && is_array($account["emails"])) ? $account["emails"][0] : "",
+                "name"       => $account["name"],
+                "username"   => $account['username'],
+                "picture"    => $account["picture"]["data"]["url"],
+                "link"       => $account["link"],
+                "userid"     => $account['id'],
+                "token"      => $account['access_token']
+            ];
         }
         
         return $accountList;
@@ -176,6 +198,15 @@ class Facebook extends AbstractProvider
         }
 
         return $this->getResourceOwner($this->lastToken);
+    }
+
+    public function getLogoutUrl()
+    {
+        $params = [
+            'next' => $this->redirectUri,
+            'access_token' => $this->getToken(),
+        ];
+        return 'https://www.facebook.com/logout.php?' . http_build_query($params, null, '&');
     }
 
     private function getBaseFacebookUrl()
