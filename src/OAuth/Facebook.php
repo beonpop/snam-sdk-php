@@ -180,6 +180,7 @@ class Facebook extends AbstractProvider
     public function setAccount($response)
     {
         return [
+            "type"       => "page",
             "connection" => "facebook",
             "email"      => isset($response["emails"]) ? $response["emails"][0] : "",
             "name"       => $response["name"],
