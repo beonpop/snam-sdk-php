@@ -184,10 +184,10 @@ class Facebook extends AbstractProvider
             "email"      => isset($response["emails"]) ? $response["emails"][0] : "",
             "name"       => $response["name"],
             "username"   => $response['username'],
-            "picture"    => $response["picture"]["data"]["url"],
+            "picture"    => $response["picture"],
             "link"       => $response["link"],
-            "userid"     => $response['id'],
-            "token"      => (string) $response["access_token"]
+            "userid"     => $response['userid'],
+            "token"      => (string) $response["token"]
         ];
     }
 
