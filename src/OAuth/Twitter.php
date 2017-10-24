@@ -70,6 +70,11 @@ class Twitter extends AbstractProvider
         return true;
     }
 
+    public function clean()
+    {
+        unset($_SESSION['snam-twitter-oauthstate']);
+    }
+
     public function getDefaultScopes()
     {
     }
@@ -124,6 +129,8 @@ class Twitter extends AbstractProvider
             "name"       => $user->name,
             "username"   => $user->screen_name,
             "userid"     => $user->id,
+            "picture"    => $user->profile_image_url,
+            "link"       => static::BASE_TWITTER_URL . '/' . $user->screen_name,
             "token"      => [
                 "oauth_token" => $this->lastToken['oauth_token'],
                 "oauth_token_secret" => $this->lastToken['oauth_token_secret']

@@ -67,6 +67,11 @@ class Instagram extends AbstractProvider
         return true;
     }
 
+    public function clean()
+    {
+        unset($_SESSION['snam-instagram-oauthstate']);
+    }
+
     public function getAccessToken($grant = 'authorization_code', array $params = [])
     {
         if (isset($_GET['code'])) {

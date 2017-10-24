@@ -69,6 +69,11 @@ class Facebook extends AbstractProvider
         return true;
     }
 
+    public function clean()
+    {
+        unset($_SESSION['snam-facebook-oauthstate']);
+    }
+
     public function getAccessToken($grant = 'authorization_code', array $params = [])
     {
         $params['code'] = $_GET['code'];
