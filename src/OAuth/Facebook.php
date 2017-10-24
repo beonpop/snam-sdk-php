@@ -69,6 +69,11 @@ class Facebook extends AbstractProvider
         return true;
     }
 
+    public function clean()
+    {
+        unset($_SESSION['snam-facebook-oauthstate']);
+    }
+
     public function getAccessToken($grant = 'authorization_code', array $params = [])
     {
         $params['code'] = $_GET['code'];
@@ -180,14 +185,15 @@ class Facebook extends AbstractProvider
     public function setAccount($response)
     {
         return [
+            "type"       => "page",
             "connection" => "facebook",
             "email"      => isset($response["emails"]) ? $response["emails"][0] : "",
             "name"       => $response["name"],
             "username"   => $response['username'],
-            "picture"    => $response["picture"]["data"]["url"],
+            "picture"    => $response["picture"],
             "link"       => $response["link"],
-            "userid"     => $response['id'],
-            "token"      => (string) $response["access_token"]
+            "userid"     => $response['userid'],
+            "token"      => (string) $response["token"]
         ];
     }
 

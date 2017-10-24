@@ -57,6 +57,11 @@ class Connection
         return isset($_SESSION["snam-connection-" . $this->name]);
     }
 
+    public function unsetOAuth()
+    {
+        unset($_SESSION["snam-connection-" . $this->name]);
+    }
+
     public function registerOAuth()
     {
         if (empty($this->oAuth)) {

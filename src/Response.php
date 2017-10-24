@@ -2,6 +2,8 @@
 
 namespace SNAMClient;
 
+use Exception;
+
 class Response
 {
     private $response;
@@ -18,6 +20,13 @@ class Response
         $this->info = curl_getinfo($curl);
 
         $this->code = (int)$this->info["http_code"];
+
+        if (empty($this->code)) {
+            throw new Exception(
+                "Failed Access to Web Service " . $this->info["url"]
+            );
+        }
+
         $this->message = self::getStatusCodeMessage($this->code);
 
         $this->parseHeaders();
@@ -40,9 +49,16 @@ class Response
         $this->content = $content;
     }
 
+    public function body()
+    {
+        return $this->content;
+    }
+
     public function content()
     {
-        if ($this->headers["Content-Type"] == "application/json") {
+        if (isset($this->headers["Content-Type"])
+            && $this->headers["Content-Type"] == "application/json"
+        ) {
             return json_decode($this->content, true);
         }
 
