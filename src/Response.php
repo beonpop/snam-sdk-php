@@ -125,6 +125,7 @@ class Response
             409 => 'Conflict',
             410 => 'Gone',
             411 => 'Length Required',
+            498 => 'Invalid Token',
             412 => 'Precondition Failed',
             413 => 'Request Entity Too Large',
             414 => 'Request-URI Too Long',
