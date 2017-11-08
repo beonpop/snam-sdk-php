@@ -16,6 +16,7 @@ class Facebook extends AbstractProvider
     protected $graphApiVersion = '2.10';
     private $connection;
     private $lastToken;
+    private $scope;
 
     public function __construct($connection)
     {
@@ -29,6 +30,7 @@ class Facebook extends AbstractProvider
             'clientSecret'      => $connection->secret,
             'graphApiVersion'   => 'v2.10'
         ]);
+        $this->scope = explode(",", $this->connection->scope);
     }
 
     public function setRedirectUri($url)
@@ -46,9 +48,14 @@ class Facebook extends AbstractProvider
         return $this->getBaseGraphUrl() . $this->graphApiVersion . '/oauth/access_token';
     }
 
+    public function addScope($scope)
+    {
+        array_push($this->scope, $scope);
+    }
+
     public function getDefaultScopes()
     {
-        return explode(",", $this->connection->scope);
+        return $this->scope;
     }
 
     public function getAuthorizationUrl(array $options = [])
@@ -157,7 +164,7 @@ class Facebook extends AbstractProvider
         }
 
         $fields = [
-            'id', 'name', 'emails', 'picture.type(large){url}', 'link', 'username', 'access_token'
+            'id', 'name', 'emails', 'picture.type(large){url}', 'link', 'username', 'access_token', 'is_published'
         ];
 
         $token = $this->getToken();
@@ -167,14 +174,16 @@ class Facebook extends AbstractProvider
 
         $accountList = [];
         foreach ($response["data"] as $account) {
+
             $accountList[$account["id"]] = [
                 "connection" => "facebook",
                 "email"      => (isset($account["emails"]) && is_array($account["emails"])) ? $account["emails"][0] : "",
                 "name"       => $account["name"],
-                "username"   => $account['username'],
+                "username"   => isset($account['username']) ? $account['username'] : "",
                 "picture"    => $account["picture"]["data"]["url"],
                 "link"       => $account["link"],
                 "userid"     => $account['id'],
+                "is_published"  => $account['id'],
                 "token"      => $account['access_token']
             ];
         }
