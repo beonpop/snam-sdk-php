@@ -41,6 +41,11 @@ class SNAM
     {
         $conn = new Connection($name);
         $conn->setResource($this)->getData();
+
+        if (empty($conn->connection)) {
+            return false;
+        }
+
         return $conn;
     }
 }
