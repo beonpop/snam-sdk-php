@@ -60,9 +60,6 @@ class Request
 
         $curlErrno = curl_errno($curl);
         $curlError = curl_error($curl);
-
-        curl_close($curl);
-
         if (!empty($curlErrno)) {
             throw new Exception(
                 "Failed Access to Web Service : Error: $curlError ($curlErrno)"
