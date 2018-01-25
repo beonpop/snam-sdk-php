@@ -156,6 +156,21 @@ class Facebook extends AbstractProvider
 
         return $permissionAccepted;
     }
+        
+    public function get($url, $fields = null)
+    {
+        
+        $token = $this->getToken();
+        $url = $this->getBaseGraphUrl().$this->graphApiVersion.'/'.$url.'/?access_token='.$token;
+        
+        if (!empty($fields)) {
+            $url .= "&" . $fields;
+        }
+
+        $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
+        $response = $this->getParsedResponse($request);
+        return $response;
+    }
 
     public function getAccounts()
     {
