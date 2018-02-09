@@ -190,6 +190,10 @@ class Facebook extends AbstractProvider
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, null);
         $response = $this->getParsedResponse($request);
 
+        if (isset($response["data"])) {
+            return $response["data"];
+        }
+
         return $response;
     }
         
