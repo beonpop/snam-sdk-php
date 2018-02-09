@@ -81,8 +81,31 @@ class Facebook extends AbstractProvider
         unset($_SESSION['snam-facebook-oauthstate']);
     }
 
+    public function getAppToken()
+    {
+        $url  = $this->getBaseGraphUrl() . $this->graphApiVersion . '/oauth/access_token';
+        $url .= "?client_id=%s&client_secret=%s&grant_type=client_credentials";
+
+        $request = $this->getAuthenticatedRequest(
+            self::METHOD_GET,
+            sprintf($url, $this->connection->clientid, $this->connection->secret),
+            null
+        );
+        $response = $this->getParsedResponse($request);
+        
+        if (isset($response["access_token"])) {
+            return $response["access_token"];
+        }
+        
+        return "";
+    }
+
     public function getAccessToken($grant = 'authorization_code', array $params = [])
     {
+        if (!isset($_GET["code"])) {
+            return "";
+        }
+
         $params['code'] = $_GET['code'];
         return $this->lastToken = parent::getAccessToken($grant, $params);
     }
@@ -111,7 +134,7 @@ class Facebook extends AbstractProvider
     protected function checkResponse(ResponseInterface $response, $data)
     {
         if (!empty($data['error'])) {
-            $message = $data['error']['type'].': '.$data['error']['message'];
+            $message = $data['error']['type'] . ': ' . $data['error']['message'];
             throw new IdentityProviderException($message, $data['error']['code'], $data);
         }
     }
@@ -137,14 +160,16 @@ class Facebook extends AbstractProvider
             'gender', 'locale', 'link', 'timezone', 'age_range'
         ];
         $appSecretProof = hash_hmac('sha256', $token->getToken(), $this->clientSecret);
-        return $this->getBaseGraphUrl().$this->graphApiVersion.'/me?fields='.implode(',', $fields)
-                        .'&access_token='.$token.'&appsecret_proof='.$appSecretProof;
+        return $this->getBaseGraphUrl() . $this->graphApiVersion
+            . '/me?fields=' . implode(',', $fields)
+            .'&access_token=' . $token
+            . '&appsecret_proof='.$appSecretProof;
     }
 
     public function getPermissions()
     {
         $token = $this->getToken();
-        $url = $this->getBaseGraphUrl().$this->graphApiVersion.'/me/permissions?access_token='.$token;
+        $url = $this->getBaseGraphUrl().$this->graphApiVersion . '/me/permissions?access_token=' . $token;
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
         $response = $this->getParsedResponse($request);
         $permissionAccepted = [];
@@ -156,13 +181,27 @@ class Facebook extends AbstractProvider
 
         return $permissionAccepted;
     }
+
+    public function debugToken($token)
+    {
+        $url = $this->getBaseGraphUrl().$this->graphApiVersion . "/debug_token";
+        $url .= "?access_token=" . $this->getAppToken() . "&input_token=" . $token;
+
+        $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, null);
+        $response = $this->getParsedResponse($request);
+
+        return $response;
+    }
         
     public function get($url, $fields = null)
     {
-        
         $token = $this->getToken();
-        $url = $this->getBaseGraphUrl().$this->graphApiVersion.'/'.$url.'/?access_token='.$token;
-        
+        $url = $this->getBaseGraphUrl().$this->graphApiVersion . '/' . $url;
+        if (empty($token)) {
+            $token = $this->getAppToken();
+        }
+
+        $url .= '/?access_token=' . $token;
         if (!empty($fields)) {
             $url .= "&" . $fields;
         }
