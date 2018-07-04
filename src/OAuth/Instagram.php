@@ -90,6 +90,12 @@ class Instagram extends AbstractProvider
 
     protected function createResourceOwner(array $response, AccessToken $token)
     {
+        if (!isset($response["data"])) {
+            if (isset($response["meta"]) && isset($response["meta"]["code"])) {
+                throw new IdentityProviderException($response["meta"]["error_message"], $response["meta"]["code"], $response);
+            }
+        }
+
         return [
             "connection" => "instagram",
             "email"      => null,

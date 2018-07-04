@@ -7,7 +7,7 @@ use SNAMClient\Request;
 
 class SNAM
 {
-    private $host =  "https://%s.snam.io";
+    private $host =  "http://%s.snam.io";
     private $app     = null;
     private $appId    = null;
     private $appToken = null;
